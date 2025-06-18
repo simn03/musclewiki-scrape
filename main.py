@@ -6,13 +6,10 @@ API_BASE = "https://musclewiki.com/newapi/exercise/exercises/"
 LIMIT = 50
 INITIAL_OFFSET = 1050
 
-# map the two known gender‐strings to IDs
 GENDER_MAP = {"male": 1, "female": 2}
 
 def create_tables(conn):
     with open("schema.sql", 'r') as f:
-        # this assumes the SQL above is pasted into this file between
-        # lines marked "-- SCHEMA START" and "-- SCHEMA END"
         sql = f.read()
     conn.executescript(sql)
 
@@ -27,10 +24,10 @@ def main():
     conn = sqlite3.connect("musclewiki.db")
     conn.execute("PRAGMA foreign_keys = ON;")
 
-    # 1) create schema
+    # create schema
     create_tables(conn)
 
-    # 2) seed genders
+    # seed genders
     for name, gid in GENDER_MAP.items():
         conn.execute(
             "INSERT OR IGNORE INTO genders (id, name, name_en_us) VALUES (?, ?, ?)",
@@ -38,6 +35,7 @@ def main():
         )
 
     next_url = f"{API_BASE}?limit={LIMIT}&offset={INITIAL_OFFSET}&status=Published"
+    
     while next_url:
         print("Fetching", next_url)
         resp = requests.get(next_url).json()
@@ -78,7 +76,7 @@ def main():
                     "SELECT 1 FROM exercises WHERE id = ?", (var_of,)
                 ).fetchone()
                 if not exists:
-                    # 2) Insert a stub row with just the ID—everything else will be NULL for now
+                    # Insert a stub row with just the ID—everything else will be NULL for now
                     conn.execute(
                         "INSERT OR IGNORE INTO exercises (id) VALUES (?)",
                         (var_of,)

@@ -1,5 +1,5 @@
 # Musclewiki.com Database Scrape
 
-https://musclewiki.com/recovery/male/chest
+https://musclewiki.com
 
 The following is a script, schema, and sqlite db for the publicly available exercises at musclewiki.
